@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SplitTrack | Income Splitter & Budgeting</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-main: #080a10; 
+            --bg-card: #11141f; 
+            --bg-input: #1b2031;
+            --border-color: #262c42;
+            --text-main: #fcfcfd;
+            --text-muted: #8e94ac;
+            
+            --primary: #22d3ee; 
+            --primary-gradient: linear-gradient(135deg, #22d3ee 0%, #06b6d4 100%);
+            --plus: #4ade80; 
+            --minus: #f87171; 
+            --warning: #fbbf24; 
+            
+            --nav-bg: rgba(15, 23, 42, 0.85); 
+            --glow: 0 0 15px rgba(34, 211, 238, 0.3);
+            --ease: cubic-bezier(0.23, 1, 0.32, 1); 
+        }
+
+        body {
+            font-family: 'Poppins', -apple-system, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            margin: 0;
+            padding: 15px 15px 100px 15px; 
+            box-sizing: border-box;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+        }
+
+        .container { max-width: 480px; margin: 0 auto; }
+
+        .top-nav {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 25px; padding-bottom: 10px;
+        }
+        .logo { font-size: 22px; font-weight: 700; letter-spacing: -1px; }
+        .logo span.icon { margin-right: 5px; }
+        .logo .text-blue { color: var(--primary); }
+
+        .nav-actions { display: flex; gap: 10px; }
+        .btn-icon {
+            background-color: var(--bg-card); border: 1px solid var(--border-color);
+            color: var(--text-muted); width: 40px; height: 40px; border-radius: 12px;
+            display: flex; justify-content: center; align-items: center;
+            cursor: pointer; transition: all 0.3s var(--ease);
+        }
+        /* Hover SVG Icon biar nyala */
+        .btn-icon:hover { color: var(--text-main); border-color: var(--primary); box-shadow: var(--glow); }
+        .btn-icon:hover svg { stroke: var(--primary); }
+        .btn-icon:active { transform: scale(0.92); }
+
+        .tab-content { display: none; animation: slideUp 0.5s var(--ease) forwards; will-change: transform, opacity; }
+        .tab-content.active { display: block; }
+
+        .card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 20px; 
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 20px -5px rgba(0,0,0,0.3);
+            transition: transform 0.3s var(--ease);
+        }
+        .card:hover { transform: translateY(-3px); }
+
+        .card-rapor { border-color: rgba(34, 211, 238, 0.2); }
+        .card-split { border-color: rgba(251, 191, 36, 0.2); }
+
+        .saldo-label { font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 5px; display: block; font-weight: 600; }
+        .saldo-value { font-size: 40px; font-weight: 700; margin: 0 0 15px 0; letter-spacing: -2px; }
+        
+        .row-flex { display: flex; justify-content: space-between; align-items: center; }
+        .border-top { border-top: 1px solid var(--border-color); padding-top: 18px; margin-top: 10px; }
+        
+        .harian-label { font-size: 13px; color: var(--text-muted); font-weight: 500; }
+        .harian-value { font-size: 20px; font-weight: 700; color: var(--primary); letter-spacing: -0.5px;}
+
+        h3 { font-size: 17px; margin: 0 0 18px 0; color: var(--text-main); font-weight: 600; }
+
+        input, select {
+            width: 100%; background-color: var(--bg-input);
+            border: 1.5px solid var(--border-color); 
+            color: var(--text-main); padding: 16px; border-radius: 14px;
+            font-size: 14px; font-family: 'Poppins', sans-serif;
+            box-sizing: border-box; margin-bottom: 14px; outline: none;
+            transition: all 0.3s var(--ease);
+        }
+        input:focus, select:focus { border-color: var(--primary); box-shadow: var(--glow); }
+        input::placeholder { color: #5c627c; }
+
+        .input-group { display: flex; gap: 12px; }
+        .input-group > div:first-child { flex: 2; }
+        .input-group > div:last-child { flex: 1; }
+
+        button.btn-main {
+            width: 100%; background: var(--primary-gradient);
+            color: #fff; border: none; padding: 16px; border-radius: 14px;
+            font-size: 15px; font-weight: 600; font-family: 'Poppins', sans-serif;
+            cursor: pointer; transition: all 0.3s var(--ease);
+            box-shadow: 0 4px 15px rgba(34, 211, 238, 0.2);
+            position: relative; overflow: hidden;
+        }
+        button.btn-main:active { transform: scale(0.96); box-shadow: 0 2px 5px rgba(34, 211, 238, 0.1); }
+        
+        button.btn-warning {
+            background: linear-gradient(135deg, var(--warning) 0%, #d97706 100%);
+            color: #000; font-weight: 700;
+            box-shadow: 0 4px 15px rgba(251, 191, 36, 0.2);
+        }
+        button.btn-warning:active { box-shadow: 0 2px 5px rgba(251, 191, 36, 0.1); }
+
+        .btn-reset {
+            background: none; border: 1.5px solid #450a0a; color: var(--minus);
+            font-size: 12px; font-weight: 600; cursor: pointer; padding: 8px 16px; border-radius: 8px;
+            transition: all 0.3s var(--ease);
+        }
+        .btn-reset:active { background-color: #450a0a; transform: scale(0.92); }
+        
+        .history-item {
+            display: flex; justify-content: space-between; align-items: center;
+            background-color: var(--bg-input); padding: 18px; border-radius: 14px;
+            margin-bottom: 12px; border: 1px solid var(--border-color);
+            transition: all 0.3s var(--ease);
+        }
+        .history-item:hover { border-color: #3f4769; background-color: #1a1e2e; }
+
+        .hist-desc { font-size: 15px; font-weight: 600; margin: 0 0 3px 0; color: var(--text-main); }
+        .hist-type { font-size: 11px; color: var(--text-muted); margin: 0; font-weight: 400;}
+        .hist-amount { font-size: 15px; font-weight: 700; text-align: right; margin: 0 0 3px 0; letter-spacing: -0.5px;}
+        .text-green { color: var(--plus); }
+        .text-red { color: var(--minus); }
+        
+        .btn-delete {
+            background: none; border: none; color: #5c627c; font-size: 10px;
+            font-weight: 700; cursor: pointer; text-transform: uppercase;
+            padding: 0; display: block; width: 100%; text-align: right; transition: color 0.2s var(--ease);
+            font-family: 'Poppins', sans-serif; letter-spacing: 0.5px;
+        }
+        .btn-delete:active { color: var(--minus); }
+        
+        .empty-state { text-align: center; color: var(--text-muted); font-size: 14px; padding: 30px 0; display: none; }
+        
+        .result-box {
+            background: #10121a; padding: 16px; border-radius: 10px;
+            margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; font-size: 14px;
+        }
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 20px; 
+            left: 20px; right: 20px;
+            background-color: var(--nav-bg);
+            -webkit-backdrop-filter: blur(15px);
+            backdrop-filter: blur(15px); 
+            border: 1px solid rgba(255,255,255,0.05);
+            display: flex; justify-content: space-around;
+            padding: 10px; z-index: 1000;
+            border-radius: 100px; 
+            max-width: 440px; margin: 0 auto;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .nav-item {
+            flex: 1; text-align: center; color: var(--text-muted);
+            font-size: 12px; font-weight: 600; cursor: pointer;
+            padding: 12px 0; border-radius: 100px; transition: all 0.4s var(--ease);
+            display: flex; flex-direction: column; align-items: center; gap: 4px;
+            position: relative; overflow: hidden;
+        }
+        .nav-item .icon { font-size: 20px; transition: transform 0.3s var(--ease); }
+        
+        .nav-item.active { color: var(--primary); background-color: rgba(34, 211, 238, 0.1); }
+        .nav-item.active .icon { transform: translateY(-2px) scale(1.1); }
+
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header class="top-nav">
+            <div class="logo"><span class="icon">✨</span>Split<span class="text-blue">Track</span></div>
+            <div class="nav-actions">
+                <button class="btn-icon" onclick="backupData()" title="Ekspor Data JSON (Backup)">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"></path>
+                        <path d="M12 12v9"></path>
+                        <path d="m16 16-4-4-4 4"></path>
+                    </svg>
+                </button>
+                <button class="btn-icon" onclick="document.getElementById('fileInput').click()" title="Impor Data JSON (Restore)">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"></path>
+                        <path d="M12 12v9"></path>
+                        <path d="m8 17 4 4 4-4"></path>
+                    </svg>
+                </button>
+                <input type="file" id="fileInput" accept=".json" style="display: none;" onchange="restoreData(event)">
+            </div>
+        </header>
+
+        <div id="tab-tracker" class="tab-content active">
+            <div class="card">
+                <span class="saldo-label">Sisa Saldo (Dompet Anda)</span>
+                <div id="saldoAman" class="saldo-value text-white">Rp 0</div>
+                <div class="row-flex border-top">
+                    <span class="harian-label">Batas Pengeluaran Harian:</span>
+                    <span id="jatahHarian" class="harian-value">Rp 0</span>
+                </div>
+            </div>
+
+            <div class="card card-rapor">
+                <h3>📊 Rapor Keuangan</h3>
+                <div class="row-flex" style="margin-bottom: 8px;">
+                    <span class="hist-type">Total Pemasukan Anda:</span>
+                    <span id="totalIn" class="text-green" style="font-weight: bold;">Rp 0</span>
+                </div>
+                <div class="row-flex" style="margin-bottom: 12px;">
+                    <span class="hist-type">Total Pengeluaran Anda:</span>
+                    <span id="totalOut" class="text-red" style="font-weight: bold;">Rp 0</span>
+                </div>
+                <div class="border-top row-flex">
+                    <span style="font-size: 13px; color: var(--text-muted);">Status Keuangan:</span>
+                    <span id="statusNabung" style="font-size: 15px; font-weight: 700;">-</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>Catat Transaksi Personal</h3>
+                <input type="text" id="desc" placeholder="Kopi, Transport, Tagihan, dll" autocomplete="off">
+                <div class="input-group">
+                    <div><input type="text" id="amount" class="auto-dot" placeholder="Nominal (Rp)" inputmode="numeric"></div>
+                    <div>
+                        <select id="type">
+                            <option value="out">Keluar 📉</option>
+                            <option value="in">Masuk 📈</option>
+                        </select>
+                    </div>
+                </div>
+                <button class="btn-main" onclick="addData()">Simpan Transaksi</button>
+            </div>
+
+            <div class="card">
+                <div class="row-flex" style="margin-bottom: 15px;">
+                    <h3 style="margin: 0;">Histori Terakhir</h3>
+                    <button class="btn-reset" onclick="clearAll()">Reset Data</button>
+                </div>
+                <div id="listBody"></div>
+                <div id="emptyState" class="empty-state">Belum ada transaksi tercatat.</div>
+            </div>
+        </div>
+
+        <div id="tab-kalkulator" class="tab-content">
+            <div class="card card-split">
+                <h3>🧮 Profit Splitter</h3>
+                <p style="font-size: 12px; color: var(--text-muted); margin-top: -5px; margin-bottom: 20px;">Kalkulator bagi hasil transparan untuk pekerja lepas atau partner bisnis.</p>
+                
+                <input type="text" id="calcTotal" class="auto-dot" placeholder="Total Pemasukan Kotor Proyek (Rp)" inputmode="numeric">
+                <input type="text" id="calcDapur" class="auto-dot" placeholder="Potongan Operasional / Kas Bersama (Rp)" inputmode="numeric">
+                
+                <select id="calcPorsi">
+                    <option value="50">Porsi Seimbang (50% Anda : 50% Partner)</option>
+                    <option value="60">Porsi Mayoritas (60% Anda : 40% Partner)</option>
+                    <option value="70">Porsi Dominan (70% Anda : 30% Partner)</option>
+                </select>
+
+                <div style="margin-top: 20px;">
+                    <div class="result-box">
+                        <span style="color: var(--text-muted); font-weight: 500;">Laba Bersih (Setelah Operasional):</span>
+                        <span id="resNet" style="font-weight: 700; font-size: 15px;">Rp 0</span>
+                    </div>
+                    <div class="result-box" style="border-left: 3.5px solid var(--primary); background-color: #0f172a;">
+                        <span style="font-weight: 600;">👉 Pendapatan Anda:</span>
+                        <span id="resGue" class="text-blue" style="font-weight: 700; font-size: 18px;">Rp 0</span>
+                    </div>
+                    <div class="result-box" style="border-left: 3.5px solid #3f4769;">
+                        <span style="color: var(--text-muted); font-weight: 500;">Pendapatan Partner:</span>
+                        <span id="resBapak" style="font-weight: 700; font-size: 15px;">Rp 0</span>
+                    </div>
+                </div>
+
+                <button class="btn-main btn-warning" onclick="saveSplitData()" style="margin-top: 15px;">Simpan Porsi Anda ke Tracker 💸</button>
+            </div>
+        </div>
+
+        <nav class="bottom-nav">
+            <div class="nav-item active" id="btn-tracker" onclick="switchTab('tracker')">
+                <span class="icon">💳</span>
+                <span>Tracker</span>
+            </div>
+            <div class="nav-item" id="btn-kalkulator" onclick="switchTab('kalkulator')">
+                <span class="icon">🧮</span>
+                <span>Splitter</span>
+            </div>
+        </nav>
+    </div>
+
+    <script>
+        // --- SISTEM TAB NAVIGATION ---
+        function switchTab(tabName) {
+            document.getElementById('tab-tracker').classList.remove('active');
+            document.getElementById('tab-kalkulator').classList.remove('active');
+            document.getElementById('btn-tracker').classList.remove('active');
+            document.getElementById('btn-kalkulator').classList.remove('active');
+
+            if(tabName === 'tracker') {
+                document.getElementById('tab-tracker').classList.add('active');
+                document.getElementById('btn-tracker').classList.add('active');
+            } else {
+                document.getElementById('tab-kalkulator').classList.add('active');
+                document.getElementById('btn-kalkulator').classList.add('active');
+            }
+            window.scrollTo(0, 0);
+        }
+
+        // --- SISTEM TRACKER & KALKULATOR UTAMA ---
+        let transactions = JSON.parse(localStorage.getItem('splittrack_data')) || [];
+        const formatter = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 });
+
+        document.querySelectorAll('.auto-dot').forEach(input => {
+            input.addEventListener('input', function(e) {
+                let value = this.value.replace(/[^0-9]/g, '');
+                if (value !== '') { this.value = parseInt(value, 10).toLocaleString('id-ID'); } 
+                else { this.value = ''; }
+                
+                if(this.id === 'calcTotal' || this.id === 'calcDapur') simulateSplit();
+            });
+        });
+
+        document.getElementById('calcPorsi').addEventListener('change', simulateSplit);
+
+        // LOGIKA HITUNG SIMULASI BORONGAN (LIVE)
+        function simulateSplit() {
+            const rawTotal = document.getElementById('calcTotal').value.replace(/\./g, '');
+            const rawDapur = document.getElementById('calcDapur').value.replace(/\./g, '');
+            
+            const total = parseFloat(rawTotal) || 0;
+            const dapur = parseFloat(rawDapur) || 0;
+            const porsiGue = parseFloat(document.getElementById('calcPorsi').value) / 100;
+
+            const netSisa = total - dapur;
+            if (netSisa < 0) { document.getElementById('resNet').innerText = "Defisit!"; return; }
+
+            const jatahGue = netSisa * porsiGue;
+            const jatahBapak = netSisa - jatahGue;
+
+            document.getElementById('resNet').innerText = formatter.format(netSisa);
+            document.getElementById('resGue').innerText = formatter.format(jatahGue);
+            document.getElementById('resBapak').innerText = formatter.format(jatahBapak);
+        }
+
+        // TARIK JATAH KE DOMPET UTAMA
+        function saveSplitData() {
+            const rawTotal = document.getElementById('calcTotal').value.replace(/\./g, '');
+            const rawDapur = document.getElementById('calcDapur').value.replace(/\./g, '');
+            const total = parseFloat(rawTotal) || 0;
+            const dapur = parseFloat(rawDapur) || 0;
+
+            if (total <= 0) return alert("Pemasukan kotor belum diisi!");
+
+            const netSisa = total - dapur;
+            const porsiGue = parseFloat(document.getElementById('calcPorsi').value) / 100;
+            const jatahGue = netSisa * porsiGue;
+
+            if (jatahGue > 0) {
+                transactions.push({ desc: `Pemasukan Bagi Hasil (Profit Sharing)`, amount: jatahGue, type: 'in' });
+                
+                document.getElementById('calcTotal').value = '';
+                document.getElementById('calcDapur').value = '';
+                simulateSplit(); 
+                updateUI(); 
+                
+                alert("Pendapatan Anda berhasil ditambahkan ke Saldo Tracker! 🚀");
+                switchTab('tracker');
+            }
+        }
+
+        // UPDATE UI TRACKER
+        function updateUI() {
+            const listBody = document.getElementById('listBody');
+            const emptyState = document.getElementById('emptyState');
+            listBody.innerHTML = '';
+            
+            let totalSaldo = 0, totalIn = 0, totalOut = 0;
+
+            if (transactions.length === 0) emptyState.style.display = 'block';
+            else emptyState.style.display = 'none';
+
+            const reversedData = [...transactions].reverse();
+
+            reversedData.forEach((t, index) => {
+                const realIndex = transactions.length - 1 - index;
+                if (t.type === 'in') { totalSaldo += t.amount; totalIn += t.amount; } 
+                else { totalSaldo -= t.amount; totalOut += t.amount; }
+
+                const isIncome = t.type === 'in';
+                const colorClass = isIncome ? 'text-green' : 'text-red';
+                const sign = isIncome ? '+' : '-';
+                
+                const itemHTML = `
+                    <div class="history-item">
+                        <div>
+                            <p class="hist-desc">${t.desc}</p>
+                            <p class="hist-type">${isIncome ? 'Pemasukan' : 'Pengeluaran'}</p>
+                        </div>
+                        <div>
+                            <p class="hist-amount ${colorClass}">${sign} ${formatter.format(t.amount).replace('Rp', '')}</p>
+                            <button onclick="deleteData(${realIndex})" class="btn-delete">Hapus</button>
+                        </div>
+                    </div>`;
+                listBody.insertAdjacentHTML('beforeend', itemHTML);
+            });
+
+            const saldoEl = document.getElementById('saldoAman');
+            saldoEl.innerText = formatter.format(totalSaldo);
+            saldoEl.className = `saldo-value ${totalSaldo < 0 ? 'text-red' : (totalSaldo === 0 ? 'text-white' : 'text-green')}`;
+            document.getElementById('jatahHarian').innerText = formatter.format(totalSaldo > 0 ? totalSaldo / 7 : 0);
+
+            document.getElementById('totalIn').innerText = formatter.format(totalIn);
+            document.getElementById('totalOut').innerText = formatter.format(totalOut);
+            
+            const margin = totalIn - totalOut;
+            const statusEl = document.getElementById('statusNabung');
+            if (margin > 0) { statusEl.innerText = `Surplus ${formatter.format(margin).replace('Rp', '')} 📈`; statusEl.className = "text-green"; } 
+            else if (margin < 0) { statusEl.innerText = `Defisit ${formatter.format(Math.abs(margin)).replace('Rp', '')} 📉`; statusEl.className = "text-red"; } 
+            else { statusEl.innerText = "-"; statusEl.className = "text-white"; }
+
+            localStorage.setItem('splittrack_data', JSON.stringify(transactions));
+        }
+
+        // SIMPAN DATA HARIAN
+        function addData() {
+            const desc = document.getElementById('desc').value.trim();
+            const rawInput = document.getElementById('amount').value.replace(/\./g, '');
+            const amount = parseFloat(rawInput);
+            const type = document.getElementById('type').value;
+
+            if (!desc || isNaN(amount) || amount <= 0) return alert('Mohon isi deskripsi dan nominal yang valid!');
+            
+            transactions.push({ desc, amount, type });
+            document.getElementById('desc').value = ''; document.getElementById('amount').value = '';
+            updateUI();
+        }
+
+        function deleteData(index) { transactions.splice(index, 1); updateUI(); }
+        function clearAll() { if (confirm('Yakin ingin menghapus seluruh histori data? Pastikan Anda sudah mengekspor data (backup).')) { transactions = []; updateUI(); } }
+
+        // BACKUP & RESTORE
+        function backupData() {
+            if (transactions.length === 0) return alert('Tidak ada data untuk diekspor!');
+            const blob = new Blob([JSON.stringify(transactions, null, 2)], { type: "application/json" });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `splittrack_backup_${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+        }
+
+        function restoreData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if (Array.isArray(data)) { transactions = data; updateUI(); alert('Impor Data Berhasil! 🚀'); }
+                } catch { alert('Format file JSON tidak valid atau rusak.'); }
+            };
+            reader.readAsText(file); event.target.value = '';
+        }
+
+        updateUI();
+    </script>
+</body>
+</html>
