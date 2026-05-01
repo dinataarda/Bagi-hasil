@@ -5,268 +5,122 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SpliTrack - Smart Budgeting</title>
     <style>
-        :root {
-            --primary: #00ff87;
-            --secondary: #00d4ff;
-            --accent: #ff007a;
-            --warning: #f1c40f;
-            --danger: #ff3838;
-            --bg-dark: #050510;
-        }
+        :root { --primary: #00ff87; --secondary: #00d4ff; --accent: #ff007a; --warning: #f1c40f; --danger: #ff3838; --bg-dark: #050510; }
+        body { margin: 0; font-family: 'Inter', 'Segoe UI', system-ui, sans-serif; color: #f1f1f1; padding: 20px; min-height: 100vh; display: flex; justify-content: center; align-items: center; background-color: var(--bg-dark); position: relative; overflow-x: hidden; }
 
-        body { 
-            margin: 0; font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif; 
-            color: #f1f1f1; padding: 20px; min-height: 100vh;
-            display: flex; justify-content: center; align-items: center;
-            background-color: var(--bg-dark); position: relative; overflow-x: hidden;
-        }
-
-        /* Animated Aurora Background */
-        .aurora-bg {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            z-index: -1; background-color: #000;
-        }
-        .orb {
-            position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.5;
-            animation: drift 15s infinite alternate ease-in-out;
-        }
+        .aurora-bg { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; background-color: #000; }
+        .orb { position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.5; animation: drift 15s infinite alternate ease-in-out; }
         .orb-1 { background: var(--primary); width: 400px; height: 400px; top: -100px; left: -100px; }
         .orb-2 { background: var(--accent); width: 450px; height: 450px; bottom: -100px; right: -100px; animation-delay: -5s; }
         .orb-3 { background: var(--secondary); width: 300px; height: 300px; top: 40%; left: 30%; animation-delay: -8s; }
+        @keyframes drift { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(60px, 80px) scale(1.1); } }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        @keyframes drift { 
-            0% { transform: translate(0, 0) scale(1); } 
-            100% { transform: translate(60px, 80px) scale(1.1); } 
-        }
-
-        @keyframes fadeUp { 
-            from { opacity: 0; transform: translateY(20px); } 
-            to { opacity: 1; transform: translateY(0); } 
-        }
-
-        /* UI Container */
-        .container { 
-            width: 100%; max-width: 440px; background: rgba(15, 15, 20, 0.7); 
-            backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
-            padding: 40px 30px; border-radius: 24px; border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 20px 50px rgba(0,0,0,0.7); z-index: 1;
-            animation: fadeUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-            display: flex; flex-direction: column;
-        }
-
-        /* Branding Logo */
-        .logo {
-            text-align: center; margin-bottom: 30px;
-        }
-        .logo h1 {
-            font-size: 32px; font-weight: 900; margin: 0; letter-spacing: -1px;
-            background: linear-gradient(45deg, var(--primary), var(--secondary));
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            text-transform: uppercase;
-        }
+        .container { width: 100%; max-width: 440px; background: rgba(15, 15, 20, 0.7); backdrop-filter: blur(25px); padding: 40px 30px; border-radius: 24px; border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 20px 50px rgba(0,0,0,0.7); z-index: 1; animation: fadeUp 0.8s forwards; display: flex; flex-direction: column; transition: 0.3s; }
+        
+        .logo { text-align: center; margin-bottom: 30px; }
+        .logo h1 { font-size: 32px; font-weight: 900; margin: 0; letter-spacing: -1px; background: linear-gradient(45deg, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-transform: uppercase; }
         .logo p { font-size: 12px; color: #b2bec3; margin: 5px 0 0; text-transform: uppercase; letter-spacing: 2px; }
 
         .input-group { margin-bottom: 18px; }
         label { font-weight: 700; margin-bottom: 8px; display: block; color: #94a3b8; font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; }
-        
-        input, select { 
-            width: 100%; padding: 14px; border: 1px solid rgba(255, 255, 255, 0.1); 
-            border-radius: 12px; box-sizing: border-box; font-size: 17px; font-weight: 600;
-            background: rgba(0, 0, 0, 0.3); color: #fff; outline: none;
-            transition: all 0.3s ease;
-        }
+        input, select { width: 100%; padding: 14px; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; box-sizing: border-box; font-size: 17px; font-weight: 600; background: rgba(0, 0, 0, 0.3); color: #fff; outline: none; transition: 0.3s; }
         input::placeholder { color: rgba(255, 255, 255, 0.2); }
         input:focus, select:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(0, 255, 135, 0.1); }
+        .input-target { color: var(--warning); border-color: rgba(241, 196, 15, 0.3); } .input-spent { color: #ff9f1a; border-color: rgba(255, 56, 56, 0.3); }
 
-        .input-target { color: var(--warning); border-color: rgba(241, 196, 15, 0.3); }
-        .input-spent { color: #ff9f1a; border-color: rgba(255, 56, 56, 0.3); }
-
-        /* Summary Dashboard */
-        .dashboard { 
-            margin-top: 25px; padding: 25px; 
-            background: rgba(255, 255, 255, 0.03); border-radius: 18px; 
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
+        .dashboard { margin-top: 15px; padding: 25px; background: rgba(255, 255, 255, 0.03); border-radius: 18px; border: 1px solid rgba(255, 255, 255, 0.05); }
         .stat-label { font-size: 12px; color: #b2bec3; text-transform: uppercase; }
         .stat-value { font-size: 28px; font-weight: 900; display: block; margin: 5px 0 15px; }
-        
         .breakdown-item { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 8px; color: #94a3b8; }
         .breakdown-item span:last-child { font-weight: 700; color: #fff; }
+        .status-badge { margin-top: 20px; padding: 12px; border-radius: 10px; font-size: 13px; text-align: center; font-weight: 600; background: rgba(255, 255, 255, 0.05); border-left: 4px solid #fff; }
 
-        .status-badge {
-            margin-top: 20px; padding: 12px; border-radius: 10px;
-            font-size: 13px; text-align: center; font-weight: 600;
-            background: rgba(255, 255, 255, 0.05); border-left: 4px solid #fff;
-        }
-
-        .btn-reset {
-            width: 100%; padding: 14px; margin-top: 20px;
-            background: transparent; border: 1px solid rgba(255, 56, 56, 0.4); color: var(--danger);
-            border-radius: 12px; font-weight: 700; cursor: pointer; text-transform: uppercase; font-size: 12px;
-            transition: 0.3s;
-        }
+        .btn-reset { width: 100%; padding: 14px; margin-top: 20px; background: transparent; border: 1px solid rgba(255, 56, 56, 0.4); color: var(--danger); border-radius: 12px; font-weight: 700; cursor: pointer; text-transform: uppercase; font-size: 12px; transition: 0.3s; }
         .btn-reset:hover { background: var(--danger); color: #fff; border-color: var(--danger); }
-
-        /* Styling Watermark Lo */
-        .watermark-footer {
-            text-align: center;
-            margin-top: 35px;
-            padding-top: 20px;
-            color: #64748b;
-            font-size: 11px;
-            line-height: 1.6;
-            letter-spacing: 0.5px;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-        }
+        
+        .watermark-footer { text-align: center; margin-top: 30px; padding-top: 20px; color: #64748b; font-size: 11px; line-height: 1.6; letter-spacing: 0.5px; border-top: 1px solid rgba(255, 255, 255, 0.05); }
         .watermark-footer strong { color: #94a3b8; font-weight: 700; }
+
+        /* DESKTOP RESPONSIVENESS */
+        @media (min-width: 768px) {
+            .container { max-width: 700px; padding: 40px 50px; }
+            .desktop-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 25px; }
+            .full-width { grid-column: 1 / -1; }
+            .input-group { margin-bottom: 20px; }
+        }
     </style>
 </head>
 <body>
-
-<div class="aurora-bg">
-    <div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div>
-</div>
+<div class="aurora-bg"><div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div></div>
 
 <div class="container">
-    <div class="logo">
-        <h1>SpliTrack</h1>
-        <p>Smart Capital Management</p>
-    </div>
+    <div class="logo"><h1>SpliTrack</h1><p>Smart Capital Management</p></div>
 
-    <div class="input-group">
-        <label>Total Budget / Saldo (IDR)</label>
-        <input type="text" id="initial" value="" placeholder="0" inputmode="numeric" oninput="format(this); update();">
-    </div>
-
-    <div class="input-group">
-        <label>Target Tabungan (IDR)</label>
-        <input type="text" id="savings" class="input-target" value="" placeholder="0" inputmode="numeric" oninput="format(this); update();">
-    </div>
-
-    <div class="input-group">
-        <label>Total Pengeluaran (IDR)</label>
-        <input type="text" id="spent" class="input-spent" value="" placeholder="0" inputmode="numeric" oninput="format(this); update();">
-    </div>
-
-    <div style="display: flex; gap: 15px;">
-        <div class="input-group" style="flex: 1;">
-            <label>Periode (Hari)</label>
-            <input type="number" id="days" value="30" oninput="update()">
+    <div class="desktop-grid">
+        <div class="input-group">
+            <label>Total Budget / Saldo (IDR)</label>
+            <input type="text" id="initial" value="" placeholder="0" inputmode="numeric" oninput="format(this); update();">
         </div>
-        <div class="input-group" style="flex: 1;">
-            <label>Tanggungan (Org)</label>
-            <input type="number" id="people" value="1" oninput="update()">
+        <div class="input-group">
+            <label>Target Tabungan (IDR)</label>
+            <input type="text" id="savings" class="input-target" value="" placeholder="0" inputmode="numeric" oninput="format(this); update();">
+        </div>
+        <div class="input-group">
+            <label>Total Pengeluaran (IDR)</label>
+            <input type="text" id="spent" class="input-spent" value="" placeholder="0" inputmode="numeric" oninput="format(this); update();">
+        </div>
+        <div style="display: flex; gap: 15px;">
+            <div class="input-group" style="flex: 1;"><label>Periode</label><input type="number" id="days" value="30" oninput="update()"></div>
+            <div class="input-group" style="flex: 1;"><label>Org</label><input type="number" id="people" value="1" oninput="update()"></div>
+        </div>
+        <div class="input-group full-width">
+            <label>Strategi Alokasi</label>
+            <select id="strategy" onchange="update()">
+                <option value="0.9">Aggressive (90% Needs / 10% Backup)</option>
+                <option value="0.8" selected>Balanced (80% Needs / 20% Backup)</option>
+                <option value="0.7">Conservative (70% Needs / 30% Backup)</option>
+            </select>
         </div>
     </div>
 
-    <div class="input-group">
-        <label>Strategi Alokasi</label>
-        <select id="strategy" onchange="update()">
-            <option value="0.9">Aggressive (90% Needs / 10% Backup)</option>
-            <option value="0.8" selected>Balanced (80% Needs / 20% Backup)</option>
-            <option value="0.7">Conservative (70% Needs / 30% Backup)</option>
-        </select>
-    </div>
-
-    <div class="dashboard" id="dashboard">
-        </div>
-
+    <div class="dashboard" id="dashboard"></div>
     <button class="btn-reset" onclick="reset()">Reset All Data</button>
 
-    <div class="watermark-footer">
-        Built with precision by <strong>Ardadinata</strong>.<br>
-        Digital Strategy & Development 2026.
-    </div>
+    <div class="watermark-footer">Built with precision by <strong>Ardadinata</strong>.<br>Digital Strategy & Development 2026.</div>
 </div>
 
 <script>
     const f = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 });
-
-    function format(el) {
-        let val = el.value.replace(/[^0-9]/g, '');
-        el.value = val ? new Intl.NumberFormat('id-ID').format(val) : "";
-    }
-
+    function format(el) { let val = el.value.replace(/[^0-9]/g, ''); el.value = val ? new Intl.NumberFormat('id-ID').format(val) : ""; }
     function parse(s) { return parseFloat(s.replace(/\./g, '')) || 0; }
 
     function save() {
-        const data = {
-            ini: document.getElementById('initial').value,
-            sav: document.getElementById('savings').value,
-            spt: document.getElementById('spent').value,
-            day: document.getElementById('days').value,
-            peo: document.getElementById('people').value,
-            str: document.getElementById('strategy').value
-        };
-        localStorage.setItem('splitrack_data', JSON.stringify(data));
+        const d = { ini: document.getElementById('initial').value, sav: document.getElementById('savings').value, spt: document.getElementById('spent').value, day: document.getElementById('days').value, peo: document.getElementById('people').value, str: document.getElementById('strategy').value };
+        localStorage.setItem('splitrack_data', JSON.stringify(d));
     }
 
     function load() {
-        const stored = localStorage.getItem('splitrack_data');
-        if (stored) {
-            const d = JSON.parse(stored);
-            document.getElementById('initial').value = d.ini || "";
-            document.getElementById('savings').value = d.sav || "";
-            document.getElementById('spent').value = d.spt || "";
-            document.getElementById('days').value = d.day || 30;
-            document.getElementById('people').value = d.peo || 1;
-            document.getElementById('strategy').value = d.str || 0.8;
-        }
+        const s = localStorage.getItem('splitrack_data');
+        if (s) { const d = JSON.parse(s); document.getElementById('initial').value = d.ini || ""; document.getElementById('savings').value = d.sav || ""; document.getElementById('spent').value = d.spt || ""; document.getElementById('days').value = d.day || 30; document.getElementById('people').value = d.peo || 1; document.getElementById('strategy').value = d.str || 0.8; }
     }
 
-    function reset() {
-        if(confirm("Hapus semua data?")) {
-            localStorage.clear();
-            location.reload();
-        }
-    }
+    function reset() { if(confirm("Hapus semua data?")) { localStorage.clear(); location.reload(); } }
 
     function update() {
         save();
-        const initial = parse(document.getElementById('initial').value);
-        const savings = parse(document.getElementById('savings').value);
-        const spent = parse(document.getElementById('spent').value);
-        const days = parseInt(document.getElementById('days').value) || 1;
-        const people = parseInt(document.getElementById('people').value) || 1;
-        const strategy = parseFloat(document.getElementById('strategy').value);
+        const initial = parse(document.getElementById('initial').value); const savings = parse(document.getElementById('savings').value); const spent = parse(document.getElementById('spent').value); const days = parseInt(document.getElementById('days').value) || 1; const people = parseInt(document.getElementById('people').value) || 1; const strategy = parseFloat(document.getElementById('strategy').value);
 
-        const activeBalance = Math.max(0, initial - savings - spent);
-        const primaryFund = activeBalance * strategy;
-        const backupFund = activeBalance - primaryFund;
-        const limitPerPerson = primaryFund / days / people;
+        const activeBalance = Math.max(0, initial - savings - spent); const primaryFund = activeBalance * strategy; const backupFund = activeBalance - primaryFund; const limitPerPerson = primaryFund / days / people;
 
-        let status = "Stable Allocation"; 
-        let colorVar = 'var(--primary)';
+        let status = "Stable Allocation"; let colorVar = 'var(--primary)';
+        if (limitPerPerson === 0 && initial === 0) { status = "Waiting for Input"; colorVar = '#b2bec3'; } 
+        else if (limitPerPerson < 30000) { status = "Critical Budget"; colorVar = 'var(--danger)'; } 
+        else if (limitPerPerson < 60000) { status = "Warning: Tight Budget"; colorVar = 'var(--warning)'; }
 
-        // Logika warna status
-        if (limitPerPerson === 0 && initial === 0) {
-            status = "Waiting for Input";
-            colorVar = '#b2bec3';
-        } else if (limitPerPerson < 30000) { 
-            status = "Critical Budget"; 
-            colorVar = 'var(--danger)'; 
-        } else if (limitPerPerson < 60000) { 
-            status = "Warning: Tight Budget"; 
-            colorVar = 'var(--warning)'; 
-        }
-
-        document.getElementById('dashboard').innerHTML = `
-            <span class="stat-label">Daily Limit / Person</span>
-            <span class="stat-value" style="color: ${colorVar}">${f.format(limitPerPerson)}</span>
-            
-            <div class="breakdown-item"><span>Active Balance:</span><span>${f.format(activeBalance)}</span></div>
-            <div class="breakdown-item"><span>Primary Allocation:</span><span>${f.format(primaryFund)}</span></div>
-            <div class="breakdown-item"><span>Emergency/Backup:</span><span style="color:var(--accent)">${f.format(backupFund)}</span></div>
-            
-            <div class="status-badge" style="border-color: ${colorVar}; color: ${colorVar}">
-                Status: ${status}
-            </div>
-        `;
+        document.getElementById('dashboard').innerHTML = `<span class="stat-label">Daily Limit / Person</span><span class="stat-value" style="color: ${colorVar}">${f.format(limitPerPerson)}</span><div class="breakdown-item"><span>Active Balance:</span><span>${f.format(activeBalance)}</span></div><div class="breakdown-item"><span>Primary Allocation:</span><span>${f.format(primaryFund)}</span></div><div class="breakdown-item"><span>Emergency/Backup:</span><span style="color:var(--accent)">${f.format(backupFund)}</span></div><div class="status-badge" style="border-color: ${colorVar}; color: ${colorVar}">Status: ${status}</div>`;
     }
-
     window.onload = () => { load(); update(); };
 </script>
-
 </body>
 </html>
