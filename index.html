@@ -75,6 +75,7 @@
             background: rgba(0, 0, 0, 0.3); color: #fff; outline: none;
             transition: all 0.3s ease;
         }
+        input::placeholder { color: rgba(255, 255, 255, 0.2); }
         input:focus, select:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(0, 255, 135, 0.1); }
 
         .input-target { color: var(--warning); border-color: rgba(241, 196, 15, 0.3); }
@@ -135,17 +136,17 @@
 
     <div class="input-group">
         <label>Total Budget / Saldo (IDR)</label>
-        <input type="text" id="initial" value="3.500.000" inputmode="numeric" oninput="format(this); update();">
+        <input type="text" id="initial" value="" placeholder="0" inputmode="numeric" oninput="format(this); update();">
     </div>
 
     <div class="input-group">
         <label>Target Tabungan (IDR)</label>
-        <input type="text" id="savings" class="input-target" value="500.000" inputmode="numeric" oninput="format(this); update();">
+        <input type="text" id="savings" class="input-target" value="" placeholder="0" inputmode="numeric" oninput="format(this); update();">
     </div>
 
     <div class="input-group">
         <label>Total Pengeluaran (IDR)</label>
-        <input type="text" id="spent" class="input-spent" value="0" inputmode="numeric" oninput="format(this); update();">
+        <input type="text" id="spent" class="input-spent" value="" placeholder="0" inputmode="numeric" oninput="format(this); update();">
     </div>
 
     <div style="display: flex; gap: 15px;">
@@ -205,12 +206,12 @@
         const stored = localStorage.getItem('splitrack_data');
         if (stored) {
             const d = JSON.parse(stored);
-            document.getElementById('initial').value = d.ini;
-            document.getElementById('savings').value = d.sav;
-            document.getElementById('spent').value = d.spt;
-            document.getElementById('days').value = d.day;
-            document.getElementById('people').value = d.peo;
-            document.getElementById('strategy').value = d.str;
+            document.getElementById('initial').value = d.ini || "";
+            document.getElementById('savings').value = d.sav || "";
+            document.getElementById('spent').value = d.spt || "";
+            document.getElementById('days').value = d.day || 30;
+            document.getElementById('people').value = d.peo || 1;
+            document.getElementById('strategy').value = d.str || 0.8;
         }
     }
 
@@ -238,7 +239,11 @@
         let status = "Stable Allocation"; 
         let colorVar = 'var(--primary)';
 
-        if (limitPerPerson < 30000) { 
+        // Logika warna status
+        if (limitPerPerson === 0 && initial === 0) {
+            status = "Waiting for Input";
+            colorVar = '#b2bec3';
+        } else if (limitPerPerson < 30000) { 
             status = "Critical Budget"; 
             colorVar = 'var(--danger)'; 
         } else if (limitPerPerson < 60000) { 
