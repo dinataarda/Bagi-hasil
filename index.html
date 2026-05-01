@@ -51,6 +51,7 @@
             padding: 40px 30px; border-radius: 24px; border: 1px solid rgba(255, 255, 255, 0.1);
             box-shadow: 0 20px 50px rgba(0,0,0,0.7); z-index: 1;
             animation: fadeUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+            display: flex; flex-direction: column;
         }
 
         /* Branding Logo */
@@ -87,7 +88,7 @@
         }
 
         .stat-label { font-size: 12px; color: #b2bec3; text-transform: uppercase; }
-        .stat-value { font-size: 28px; font-weight: 900; color: var(--primary); display: block; margin: 5px 0 15px; }
+        .stat-value { font-size: 28px; font-weight: 900; display: block; margin: 5px 0 15px; }
         
         .breakdown-item { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 8px; color: #94a3b8; }
         .breakdown-item span:last-child { font-weight: 700; color: #fff; }
@@ -105,6 +106,19 @@
             transition: 0.3s;
         }
         .btn-reset:hover { background: var(--danger); color: #fff; border-color: var(--danger); }
+
+        /* Styling Watermark Lo */
+        .watermark-footer {
+            text-align: center;
+            margin-top: 35px;
+            padding-top: 20px;
+            color: #64748b;
+            font-size: 11px;
+            line-height: 1.6;
+            letter-spacing: 0.5px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .watermark-footer strong { color: #94a3b8; font-weight: 700; }
     </style>
 </head>
 <body>
@@ -158,6 +172,11 @@
         </div>
 
     <button class="btn-reset" onclick="reset()">Reset All Data</button>
+
+    <div class="watermark-footer">
+        Built with precision by <strong>Ardadinata</strong>.<br>
+        Digital Strategy & Development 2026.
+    </div>
 </div>
 
 <script>
@@ -216,25 +235,30 @@
         const backupFund = activeBalance - primaryFund;
         const limitPerPerson = primaryFund / days / people;
 
-        let status = "Stable Allocation"; let color = varColor('--primary');
-        if (limitPerPerson < 30000) { status = "Critical Budget"; color = varColor('--danger'); }
-        else if (limitPerPerson < 60000) { status = "Warning: Tight Budget"; color = varColor('--warning'); }
+        let status = "Stable Allocation"; 
+        let colorVar = 'var(--primary)';
+
+        if (limitPerPerson < 30000) { 
+            status = "Critical Budget"; 
+            colorVar = 'var(--danger)'; 
+        } else if (limitPerPerson < 60000) { 
+            status = "Warning: Tight Budget"; 
+            colorVar = 'var(--warning)'; 
+        }
 
         document.getElementById('dashboard').innerHTML = `
             <span class="stat-label">Daily Limit / Person</span>
-            <span class="stat-value" style="color: ${color}">${f.format(limitPerPerson)}</span>
+            <span class="stat-value" style="color: ${colorVar}">${f.format(limitPerPerson)}</span>
             
             <div class="breakdown-item"><span>Active Balance:</span><span>${f.format(activeBalance)}</span></div>
             <div class="breakdown-item"><span>Primary Allocation:</span><span>${f.format(primaryFund)}</span></div>
             <div class="breakdown-item"><span>Emergency/Backup:</span><span style="color:var(--accent)">${f.format(backupFund)}</span></div>
             
-            <div class="status-badge" style="border-color: ${color}; color: ${color}">
+            <div class="status-badge" style="border-color: ${colorVar}; color: ${colorVar}">
                 Status: ${status}
             </div>
         `;
     }
-
-    function varColor(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
 
     window.onload = () => { load(); update(); };
 </script>
